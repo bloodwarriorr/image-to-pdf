@@ -1,0 +1,59 @@
+.container {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-items:center;
+   justify-content: center;
+   
+  }
+  .buttonSection{
+    display: flex;
+    gap: 20px;
+  }
+  h2 {
+    color: #007bff;
+    text-align: center;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .button {
+    margin-top: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+    width: 50%;
+   
+  }
+
+  .button:hover {
+    background-color: #0056b3;
+  }
+  .drop-zone {
+    border: 2px dashed #007bff;
+    border-radius: 4px;
+    padding: 20px;
+    font-size: 18px;
+    color: #666;
+    cursor: pointer;
+    transition: border-color 0.3s ease-in-out;
+   
+    
+  }
+  
+  .drop-zone:hover {
+    border-color: #0056b3;
+  }
+  
+  .file-input {
+    max-width: fit-content;
+  }
