@@ -13,7 +13,9 @@ function ImageToPDFConverter() {
 
   const onDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
-      setImageFiles([...imageFiles, ...acceptedFiles]);
+      const containsFilesThatAreNotPngOrJpg=acceptedFiles.filter((file)=>file.type==='image/png'||
+      file.type==='image/jpeg'||file.type==='image/jpg')
+      setImageFiles([...imageFiles, ...containsFilesThatAreNotPngOrJpg]);
     }
   };
 
@@ -73,14 +75,14 @@ function ImageToPDFConverter() {
       //   const url = URL.createObjectURL(blob);
       //   window.open(url);
 
-      const pdfBytes = await pdfDoc.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      saveAs(blob, 'myImage.pdf');
-
-      setImageFiles([]);
-      setIsConfirmationModalOpen(false);
-
+      
     }
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    saveAs(blob, 'myImage.pdf');
+  
+    setImageFiles([]);
+    setIsConfirmationModalOpen(false);
   }
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
