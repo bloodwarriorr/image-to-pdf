@@ -7,9 +7,9 @@ function App() {
     <div className="mainContainer">
       <div className="containerApp">
         <h1 className="headlineImage">PDF Converter</h1>
-      <ImageToPDFConverter />
+        <ImageToPDFConverter />
       </div>
-      </div>
+    </div>
   );
 }
 

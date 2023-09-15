@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { PDFDocument } from 'pdf-lib';
 import { useDropzone } from 'react-dropzone';
 import { saveAs } from 'file-saver';
-import './ImageToPDFConverter.css'; 
+import './ImageToPDFConverter.css';
 import Modal from 'react-modal';
 Modal.setAppElement('#root');
 function ImageToPDFConverter() {
   const [imageFiles, setImageFiles] = useState([]);
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); 
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
 
 
@@ -18,7 +18,7 @@ function ImageToPDFConverter() {
   };
 
   const handleConvertClick = () => {
-    if (!imageFiles.length>0) {
+    if (!imageFiles.length > 0) {
       alert('Please upload at least one image.');
       return;
     }
@@ -26,31 +26,42 @@ function ImageToPDFConverter() {
     // Open the confirmation modal
     setIsConfirmationModalOpen(true);
   };
-const deleteImage=(e,imageNameToDelete)=>{
-  e.stopPropagation();
-  let tempArr=[];
-  tempArr=imageFiles.filter((file)=>file.name!==imageNameToDelete)
-  setImageFiles(tempArr);
-}
+  const deleteImage = (e, imageNameToDelete) => {
+    e.stopPropagation();
+    let tempArr = [];
+    tempArr = imageFiles.filter((file) => file.name !== imageNameToDelete)
+    setImageFiles(tempArr);
+  }
   const handleCancel = (order) => {
     // Close the confirmation modal
-    if (order==='CancelAndRemainInput') {
-      
+    if (order === 'CancelAndRemainInput') {
+
       setIsConfirmationModalOpen(false);
     }
-    else if(order==="CancelAndDeleteInput"){
+    else if (order === "CancelAndDeleteInput") {
       setIsConfirmationModalOpen(false);
       setImageFiles([]);
     }
   }
   const convertToPDF = async () => {
-    console.log(imageFiles);
-      const pdfDoc = await PDFDocument.create();
-      for (const imageFile of imageFiles) {
+    const pdfDoc = await PDFDocument.create();
+    for (const imageFile of imageFiles) {
       const imageBytes = await fetch(URL.createObjectURL(imageFile)).then((res) =>
         res.arrayBuffer()
       );
-      const image = await pdfDoc.embedPng(imageBytes);
+
+      let image;
+      switch (imageFile.type) {
+        case "image/png":
+          image = await pdfDoc.embedPng(imageBytes);
+          break;
+        case "image/jpeg":
+          image = await pdfDoc.embedJpg(imageBytes);
+          break;
+        case "image/jpg":
+          image = await pdfDoc.embedJpg(imageBytes);
+          break;
+      }
       const page = pdfDoc.addPage([image.width, image.height]);
       const { width, height } = page.getSize();
       page.drawImage(image, {
@@ -59,16 +70,16 @@ const deleteImage=(e,imageNameToDelete)=>{
         width,
         height,
       });
-           //   const url = URL.createObjectURL(blob);
-          //   window.open(url);
-          
-            const pdfBytes = await pdfDoc.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            saveAs(blob, 'myImage.pdf');
-       
-        setImageFiles([]);
-        setIsConfirmationModalOpen(false);
-     
+      //   const url = URL.createObjectURL(blob);
+      //   window.open(url);
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      saveAs(blob, 'myImage.pdf');
+
+      setImageFiles([]);
+      setIsConfirmationModalOpen(false);
+
     }
   }
   const { getRootProps, getInputProps } = useDropzone({
@@ -83,21 +94,21 @@ const deleteImage=(e,imageNameToDelete)=>{
       <div  {...getRootProps()} style={{ cursor: 'pointer' }} className="drop-zone">
         <input  {...getInputProps()} />
         {imageFiles ? (
-          <p className="scrollable-input" style={{wordBreak:'break-word'}}>
-          <b>Selected:</b><br></br><br></br> 
-          {imageFiles.map((img,index)=><span key={index}><small className='small-delete-button' onClick={(e)=>deleteImage(e,img.name)}>X </small>
-          {index+1+') '}{img.name}<br></br><br></br></span>)}</p>
+          <p className="scrollable-input" style={{ wordBreak: 'break-word' }}>
+            <b>Selected:</b><br></br><br></br>
+            {imageFiles.map((img, index) => <span key={index}><small className='small-delete-button' onClick={(e) => deleteImage(e, img.name)}>X </small>
+              {index + 1 + ') '}{img.name}<br></br><br></br></span>)}</p>
         ) : (
           <p>Drag 'n' drop an image file here, or click to select one</p>
         )}
       </div>
       <div className="buttonSection">
-      <button className="button" onClick={handleConvertClick}>
-        Convert to PDF
-      </button>
-      <button className="button" onClick={()=>handleCancel("CancelAndDeleteInput")}>
-       Cancel
-      </button>
+        <button className="button" onClick={handleConvertClick}>
+          Convert to PDF
+        </button>
+        <button className="button" onClick={() => handleCancel("CancelAndDeleteInput")}>
+          Cancel
+        </button>
       </div>
       <Modal
         isOpen={isConfirmationModalOpen}
@@ -107,11 +118,11 @@ const deleteImage=(e,imageNameToDelete)=>{
         overlayClassName="confirmation-modal-overlay"
       >
         <div className="buttonSectionConfirmationDiv">
-        <p>Do you want to proceed and download the PDF?</p>
-        <div className="buttonSectionConfirmationBtns">
-        <button className="button" onClick={convertToPDF}>Yes</button>
-        <button className="button" onClick={()=>handleCancel("CancelAndRemainInput")}>No</button>
-        </div>
+          <p>Do you want to proceed and download the PDF?</p>
+          <div className="buttonSectionConfirmationBtns">
+            <button className="button" onClick={convertToPDF}>Yes</button>
+            <button className="button" onClick={() => handleCancel("CancelAndRemainInput")}>No</button>
+          </div>
         </div>
       </Modal>
     </div>
