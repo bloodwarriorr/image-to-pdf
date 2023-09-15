@@ -3,8 +3,13 @@ import { PDFDocument } from 'pdf-lib';
 import { useDropzone } from 'react-dropzone';
 import { saveAs } from 'file-saver';
 import './ImageToPDFConverter.css'; 
+import Modal from 'react-modal';
+Modal.setAppElement('#root');
 function ImageToPDFConverter() {
   const [imageFiles, setImageFiles] = useState([]);
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); 
+
+
 
   const onDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -12,12 +17,28 @@ function ImageToPDFConverter() {
     }
   };
 
-  const convertToPDF = async () => {
+  const handleConvertClick = () => {
     if (!imageFiles.length>0) {
-        alert('Please upload at least one image.');
-        return;
-      }
-  
+      alert('Please upload at least one image.');
+      return;
+    }
+
+    // Open the confirmation modal
+    setIsConfirmationModalOpen(true);
+  };
+
+  const handleCancel = (order) => {
+    // Close the confirmation modal
+    if (order==='CancelAndRemainInput') {
+      
+      setIsConfirmationModalOpen(false);
+    }
+    else if(order==="CancelAndDeleteInput"){
+      setIsConfirmationModalOpen(false);
+      setImageFiles([]);
+    }
+  }
+  const convertToPDF = async () => {
       const pdfDoc = await PDFDocument.create();
       for (const imageFile of imageFiles) {
       const imageBytes = await fetch(URL.createObjectURL(imageFile)).then((res) =>
@@ -32,21 +53,18 @@ function ImageToPDFConverter() {
         width,
         height,
       });
-    }
-      const userConfirmed = window.confirm(
-          'Do you want to proceed and download the PDF?'
-          );
-          //   const url = URL.createObjectURL(blob);
+           //   const url = URL.createObjectURL(blob);
           //   window.open(url);
-          if (userConfirmed) {
-          const pdfBytes = await pdfDoc.save();
-          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-          saveAs(blob, 'myImage.pdf');
-      }
-      setImageFiles([]);
-      
-  };
-
+          
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            saveAs(blob, 'myImage.pdf');
+       
+        setImageFiles([]);
+        setIsConfirmationModalOpen(false);
+     
+    }
+  }
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: 'image/*', // Accept all image types
@@ -57,17 +75,36 @@ function ImageToPDFConverter() {
     <div className="container">
       <h2>Image to PDF Converter</h2>
       <div  {...getRootProps()} style={{ cursor: 'pointer' }} className="drop-zone">
-        <input {...getInputProps()} />
+        <input  {...getInputProps()} />
         {imageFiles ? (
-          <p style={{wordBreak:'break-word'}}><b>Selected:</b><br></br><br></br> {imageFiles.map((img,index)=><span>{index+1+') '}{img.name}<br></br><br></br></span>)}</p>
+          <p className="scrollable-input" style={{wordBreak:'break-word'}}><b>Selected:</b><br></br><br></br> {imageFiles.map((img,index)=><span>{index+1+') '}{img.name}<br></br><br></br></span>)}</p>
         ) : (
           <p>Drag 'n' drop an image file here, or click to select one</p>
         )}
       </div>
       <div className="buttonSection">
-      <button className='button' onClick={convertToPDF}>Convert to PDF</button>
-      <button className='button' onClick={()=>setImageFiles([])}>Clear Select</button>
+      <button className="button" onClick={handleConvertClick}>
+        Convert to PDF
+      </button>
+      <button className="button" onClick={()=>handleCancel("CancelAndDeleteInput")}>
+       Cancel
+      </button>
       </div>
+      <Modal
+        isOpen={isConfirmationModalOpen}
+        onRequestClose={handleCancel}
+        contentLabel="Confirmation Modal"
+        className="confirmation-modal"
+        overlayClassName="confirmation-modal-overlay"
+      >
+        <div className="buttonSectionConfirmationDiv">
+        <p>Do you want to proceed and download the PDF?</p>
+        <div className="buttonSectionConfirmationBtns">
+        <button className="button" onClick={convertToPDF}>Yes</button>
+        <button className="button" onClick={()=>handleCancel("CancelAndRemainInput")}>No</button>
+        </div>
+        </div>
+      </Modal>
     </div>
   );
 }

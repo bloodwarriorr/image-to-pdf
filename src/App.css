@@ -1,4 +1,7 @@
-
+.mainContainer{
+  max-height: 500px;
+ margin: 20px;
+}
 
 body {
   font-family: Arial, sans-serif;
@@ -27,6 +30,8 @@ body {
   display: flex;
   flex-direction: column;
   text-align: center;
+  justify-content: center;
+  align-content: center;
 }
 .headlineImage{
   align-self: center;
@@ -59,7 +64,7 @@ h1 {
 }
 
 *::-webkit-scrollbar {
-  width: 12px;
+  width: 7px;
 }
 
 *::-webkit-scrollbar-track {
