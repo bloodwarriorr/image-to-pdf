@@ -26,7 +26,12 @@ function ImageToPDFConverter() {
     // Open the confirmation modal
     setIsConfirmationModalOpen(true);
   };
-
+const deleteImage=(e,imageNameToDelete)=>{
+  e.stopPropagation();
+  let tempArr=[];
+  tempArr=imageFiles.filter((file)=>file.name!==imageNameToDelete)
+  setImageFiles(tempArr);
+}
   const handleCancel = (order) => {
     // Close the confirmation modal
     if (order==='CancelAndRemainInput') {
@@ -39,6 +44,7 @@ function ImageToPDFConverter() {
     }
   }
   const convertToPDF = async () => {
+    console.log(imageFiles);
       const pdfDoc = await PDFDocument.create();
       for (const imageFile of imageFiles) {
       const imageBytes = await fetch(URL.createObjectURL(imageFile)).then((res) =>
@@ -77,7 +83,10 @@ function ImageToPDFConverter() {
       <div  {...getRootProps()} style={{ cursor: 'pointer' }} className="drop-zone">
         <input  {...getInputProps()} />
         {imageFiles ? (
-          <p className="scrollable-input" style={{wordBreak:'break-word'}}><b>Selected:</b><br></br><br></br> {imageFiles.map((img,index)=><span>{index+1+') '}{img.name}<br></br><br></br></span>)}</p>
+          <p className="scrollable-input" style={{wordBreak:'break-word'}}>
+          <b>Selected:</b><br></br><br></br> 
+          {imageFiles.map((img,index)=><span key={index}><small className='small-delete-button' onClick={(e)=>deleteImage(e,img.name)}>X </small>
+          {index+1+') '}{img.name}<br></br><br></br></span>)}</p>
         ) : (
           <p>Drag 'n' drop an image file here, or click to select one</p>
         )}

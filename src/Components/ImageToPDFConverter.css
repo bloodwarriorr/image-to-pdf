@@ -102,3 +102,16 @@
   /* Add any other styles you want for the scrollable container */
 
 }
+.small-delete-button {
+  display: inline-block;
+  background-color: #ff3333; /* Background color for the delete button */
+  color: white; /* Text color */
+  font-size: 12px; /* Font size */
+  border: none;
+  border-radius: 50%; /* Makes it circular */
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor: pointer;
+  margin-right: 5px; /* Add some spacing between the "X" and image name */
+}
